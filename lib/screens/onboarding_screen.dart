@@ -1,546 +1,945 @@
 import 'package:flutter/material.dart';
+import 'package:all_pnud/widgets/bubble_background.dart';
+
 import 'dart:math' as math;
 
-class AGVMOnboardingScreen extends StatefulWidget {
+class OnboardingPage extends StatelessWidget {
   final VoidCallback onFinished;
-  const AGVMOnboardingScreen({required this.onFinished, super.key});
+
+  const OnboardingPage({super.key, required this.onFinished});
 
   @override
-  State<AGVMOnboardingScreen> createState() => _AGVMOnboardingScreenState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: OnboardingPagePresenter(
+        pages: [
+          OnboardingPageModel(
+            title: 'Tanàna voalamina kokoa',
+            description:
+                'Ataovy nomerika ny fitantanana ny fitateram-bahoaka, ny fiantsonana ary ny fiara eto Madagasikara.',
+            imagePath: 'assets/images/villemieuxorganise.jpg',
+            bgColor: const Color(0xFF0A4D68),
+            accentColor: const Color(0xFF00D9FF),
+            textColor: Colors.white,
+          ),
+          OnboardingPageModel(
+            title: 'Fanaraha-maso marani-tsaina ny fiara',
+            description:
+                'Ataovy mora ny fisoratana anarana, fanaraha-maso ary fanarahana ny fiara ampiasaina ho an’ny daholobe.',
+            imagePath: 'assets/images/transport_commun.jpg',
+            bgColor: const Color(0xFF0C7C59),
+            accentColor: const Color(0xFF00E5A0),
+            textColor: Colors.white,
+          ),
+          OnboardingPageModel(
+            title: 'Fitantanana fiantsonana vonjimaika',
+            description:
+                'Fantaro, araho ary fehezo ny toerana fiantsonana mba hahatonga ny fivezivezen’ny tanàna ho milamina kokoa.',
+            imagePath: 'assets/images/parkingtaxi.jpg',
+            bgColor: const Color(0xFF2E8B57),
+            accentColor: const Color(0xFF7FFF00),
+            textColor: Colors.white,
+          ),
+          OnboardingPageModel(
+            title: 'Ady amin’ny hosoka',
+            description:
+                'Ataovy nomerika ny fandoavam-bola, fehezo ny fahazoan-dalana ary ahena ny kolikoly amin’ny rafitra azo antoka.',
+            imagePath: 'assets/images/payementsecure.jpg',
+            bgColor: const Color(0xFF0C7C59),
+            accentColor: const Color(0xFF00E5A0),
+            textColor: Colors.white,
+          ),
+          OnboardingPageModel(
+            title: 'Ampifandraiso ny olom-pirenena sy ny kaominina',
+            description:
+                'Ataovy tsotra ny fifandraisana eo amin’ny mpitatitra, ny olom-pirenena ary ny manampahefana amin’ny sehatra iray.',
+            imagePath: 'assets/images/connectcommune.jpg',
+            bgColor: const Color(0xFFF4F4F4),
+            accentColor: const Color(0xFF6C5CE7),
+            textColor: const Color(0xFF1B1B1B),
+          ),
+        ],
+        onFinish: onFinished,
+      ),
+    );
+  }
 }
 
-class _AGVMOnboardingScreenState extends State<AGVMOnboardingScreen>
+class OnboardingPagePresenter extends StatefulWidget {
+  final List<OnboardingPageModel> pages;
+  final VoidCallback? onSkip;
+  final VoidCallback? onFinish;
+
+  const OnboardingPagePresenter({
+    super.key,
+    required this.pages,
+    this.onSkip,
+    this.onFinish,
+  });
+
+  @override
+  State<OnboardingPagePresenter> createState() => _OnboardingPageState();
+}
+
+class _OnboardingPageState extends State<OnboardingPagePresenter>
     with TickerProviderStateMixin {
-  final PageController _pageController = PageController();
-  int _currentIndex = 0;
-  
-  // Contrôleurs d'animation simplifiés
-  late AnimationController _mainController;
-  late AnimationController _backgroundController;
-  
-  // Animations
+  int _currentPage = 0;
+  final PageController _pageController = PageController(initialPage: 0);
+  late AnimationController _animationController;
+  late AnimationController _floatingController;
+  late AnimationController _pulseController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _scaleAnimation;
-  late Animation<double> _backgroundAnimation;
-
-  final List<OnboardingStep> _steps = [
-    OnboardingStep(
-      title: "Connecté à\ I-zotra",
-      subtitle: "Découvrez une mobilité intelligente qui transforme vos déplacements quotidiens dans la capitale",
-       imagePath: 'assets/images/app_logo.png',
-      primaryColor: const Color(0xFF098E00),
-      accentColor: const Color(0xFF00C21C),
-      features: [
-       "🏙️ Cartographie intelligente",
-        "📍 Navigation précise", 
-        "⚡ Connexion temps réel"
-      ],
-    ),
-    OnboardingStep(
-      title: "Transport\nInnovant",
-      subtitle: "Une technologie de pointe au service de votre mobilité quotidienne avec des solutions durables",
-      icon: Icons.directions_transit_filled_rounded,
-      primaryColor: const Color(0xFF00C21C),
-      accentColor: const Color(0xFF098E00),
-      features: [
-       "🚌 Réseau optimisé",
-        "💡 IA prédictive",
-        "🔄 Synchronisation parfaite"
-      ],
-    ),
-    OnboardingStep(
-      title: "Communauté\nDurable",
-      subtitle: "Rejoignez une communauté engagée pour un transport écologique et un avenir plus vert à Madagascar",
-      icon: Icons.eco_rounded,
-      primaryColor: const Color(0xFF098E00),
-      accentColor: const Color(0xFFE98C21),
-      features: [
-        "🌱 Impact positif",
-        "🤝 Engagement collectif",
-        "🌍 Futur durable"
-      ],
-    ),
-  ];
+  late Animation<double> _rotateAnimation;
 
   @override
   void initState() {
     super.initState();
-    _initializeAnimations();
-    _startAnimations();
-  }
 
-  void _initializeAnimations() {
-    _mainController = AnimationController(
-      duration: const Duration(milliseconds: 1200),
-      vsync: this,
-    );
-    
-    _backgroundController = AnimationController(
-      duration: const Duration(seconds: 5),
+    // Animation principale pour le contenu
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 800),
       vsync: this,
     );
 
-    _fadeAnimation = CurvedAnimation(
-      parent: _mainController,
-      curve: Curves.easeOut,
+    // Animation flottante continue
+    _floatingController = AnimationController(
+      duration: const Duration(milliseconds: 3000),
+      vsync: this,
+    )..repeat(reverse: true);
+
+    // Animation de pulsation pour les accents
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 2000),
+      vsync: this,
+    )..repeat(reverse: true);
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
+      ),
     );
 
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _mainController,
-      curve: Curves.easeOutBack,
-    ));
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.2, 0.8, curve: Curves.easeOutCubic),
+      ),
+    );
 
-    _scaleAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _mainController,
-      curve: Curves.elasticOut,
-    ));
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.0, 0.7, curve: Curves.elasticOut),
+      ),
+    );
 
-    _backgroundAnimation = Tween<double>(
-      begin: 0,
-      end: 2 * math.pi,
-    ).animate(_backgroundController);
-  }
+    _rotateAnimation = Tween<double>(begin: -0.1, end: 0.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.0, 0.8, curve: Curves.easeOutBack),
+      ),
+    );
 
-  void _startAnimations() {
-    _mainController.forward();
-    _backgroundController.repeat();
-  }
-
-  void _resetAnimations() {
-    _mainController.reset();
-    _mainController.forward();
+    _animationController.forward();
   }
 
   @override
   void dispose() {
-    _mainController.dispose();
-    _backgroundController.dispose();
+    _animationController.dispose();
+    _floatingController.dispose();
+    _pulseController.dispose();
     _pageController.dispose();
     super.dispose();
   }
 
-  void _nextPage() {
-    if (_currentIndex < _steps.length - 1) {
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
-    } else {
-      widget.onFinished();
-    }
+  void _onPageChanged(int idx) {
+    setState(() {
+      _currentPage = idx;
+    });
+    _animationController.reset();
+    _animationController.forward();
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final currentStep = _steps[_currentIndex];
-    
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isLastPage = _currentPage == widget.pages.length - 1;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F8F8),
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              currentStep.primaryColor.withOpacity(0.1),
-              const Color(0xFFF8F8F8),
-              currentStep.accentColor.withOpacity(0.05),
-            ],
-          ),
-        ),
-        child: Stack(
-          children: [
-            _buildBackground(size, currentStep),
-            _buildContent(),
-            _buildTopButton(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBackground(Size size, OnboardingStep step) {
-    return AnimatedBuilder(
-      animation: _backgroundAnimation,
-      builder: (context, child) {
-        return CustomPaint(
-          size: size,
-          painter: BackgroundPatternPainter(
-            _backgroundAnimation.value,
-            step.primaryColor,
-            step.accentColor,
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildContent() {
-    return SafeArea(
-      child: PageView.builder(
-        controller: _pageController,
-        onPageChanged: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-          _resetAnimations();
-        },
-        itemCount: _steps.length,
-        itemBuilder: (context, index) {
-          return _buildStepPage(_steps[index]);
-        },
-      ),
-    );
-  }
-
-  Widget _buildStepPage(OnboardingStep step) {
-  // Enveloppez la colonne avec SingleChildScrollView pour éviter le débordement
-  return Padding(
-    padding: const EdgeInsets.all(24.0),
-    child: SingleChildScrollView( // <--- AJOUTÉ ICI
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      body: BubbleBackground( // 🎈 AJOUT DU BUBBLE ICI
+      baseColor: widget.pages[_currentPage].bgColor, // couleur dominante
+      bubbleCount: 10, // nombre de bulles décoratives
+      child: Stack(
+      
         children: [
-          const SizedBox(height: 20),
-          
-          // Icône principale
-          _buildMainIcon(step),
-          
-          const SizedBox(height: 40),
-          
-          // Titre
-          _buildTitle(step.title),
-          
-          const SizedBox(height: 20),
-          
-          // Sous-titre
-          _buildSubtitle(step.subtitle),
-          
-          const SizedBox(height: 40),
-          
-          // Features
-          _buildFeatures(step.features),
-          
-          const SizedBox(height: 40), // Remplacer Spacer par un SizedBox pour mieux fonctionner avec SingleChildScrollView
-          
-          // Contrôles
-          _buildControls(),
-          
-          const SizedBox(height: 30),
-        ],
-      ),
-    ),
-  );
-}
-Widget _buildMainIcon(OnboardingStep step) {
-  return AnimatedBuilder(
-    animation: _scaleAnimation,
-    builder: (context, child) {
-      return Transform.scale(
-        scale: _scaleAnimation.value,
-        child: Container(
-          width: 120,
-          height: 120,
-          decoration: BoxDecoration(
-            gradient: RadialGradient(
-              colors: [
-                step.accentColor.withOpacity(0.2),
-                step.primaryColor.withOpacity(0.1),
-                Colors.transparent,
-              ],
-            ),
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: step.primaryColor.withOpacity(0.3),
-              width: 2,
-            ),
-          ),
-          // 👇 C'est cette logique qu'il faut ajouter 👇
-          child: step.imagePath != null
-              // Si un chemin d'image est fourni, on affiche l'Image
-              ? Padding(
-                  padding: const EdgeInsets.all(25.0),
-                  child: Image.asset(step.imagePath!),
-                )
-              // Sinon, on affiche l'Icone
-              : Icon(
-                  step.icon,
-                  size: 60,
-                  color: step.primaryColor,
-                ),
-        ),
-      );
-    },
-  );
-}
-  Widget _buildTitle(String title) {
-    return SlideTransition(
-      position: _slideAnimation,
-      child: FadeTransition(
-        opacity: _fadeAnimation,
-        child: Text(
-          title,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontFamily: 'Manrope',
-            fontSize: 32,
-            fontWeight: FontWeight.w800,
-            color: Color(0xFF131313),
-            height: 1.2,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSubtitle(String subtitle) {
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: Text(
-        subtitle,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontFamily: 'Manrope',
-          fontSize: 16,
-          fontWeight: FontWeight.w400,
-          color: Color(0xFF5D5D5D),
-          height: 1.5,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFeatures(List<String> features) {
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: Wrap(
-        spacing: 12,
-        runSpacing: 12,
-        children: features.map((feature) {
-          return Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 12,
-            ),
+          // Fond avec gradient animé
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 600),
+            curve: Curves.easeInOut,
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: _steps[_currentIndex].accentColor.withOpacity(0.3),
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: _steps[_currentIndex].primaryColor.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Text(
-              feature,
-              style: const TextStyle(
-                fontFamily: 'Manrope',
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF131313),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  widget.pages[_currentPage].bgColor,
+                  widget.pages[_currentPage].bgColor.withOpacity(0.8),
+                ],
               ),
             ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildTopButton() {
-    return Positioned(
-      top: MediaQuery.of(context).padding.top + 20,
-      right: 24,
-      child: FadeTransition(
-        opacity: _fadeAnimation,
-        child: TextButton(
-          onPressed: widget.onFinished,
-          style: TextButton.styleFrom(
-            foregroundColor: const Color(0xFF5D5D5D),
-            backgroundColor: Colors.white.withOpacity(0.9),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
           ),
-          child: const Text(
-            'Passer',
-            style: TextStyle(
-              fontFamily: 'Manrope',
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
-  Widget _buildControls() {
-    return AnimatedBuilder(
-      animation: _scaleAnimation,
-      builder: (context, child) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Indicateurs
-            Row(
-              children: List.generate(_steps.length, (index) {
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  margin: const EdgeInsets.only(right: 8),
-                  width: _currentIndex == index ? 32 : 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: _currentIndex == index
-                        ? _steps[_currentIndex].primaryColor
-                        : _steps[_currentIndex].primaryColor.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(4),
+          // Particules décoratives animées
+          ...List.generate(8, (index) {
+            return AnimatedBuilder(
+              animation: _floatingController,
+              builder: (context, child) {
+                final offset =
+                    math.sin(_floatingController.value * 2 * math.pi + index) *
+                        20;
+                return Positioned(
+                  left: (index % 4) * screenWidth / 4 + offset,
+                  top: (index ~/ 4) * screenHeight / 2 + offset * 2,
+                  child: Opacity(
+                    opacity: 0.1,
+                    child: Container(
+                      width: 80 + (index * 10).toDouble(),
+                      height: 80 + (index * 10).toDouble(),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [
+                            widget.pages[_currentPage].accentColor
+                                .withOpacity(0.3),
+                            widget.pages[_currentPage].accentColor
+                                .withOpacity(0.0),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 );
-              }),
-            ),
-            
-            // Bouton suivant
-            Transform.scale(
-              scale: _scaleAnimation.value,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      _steps[_currentIndex].primaryColor,
-                      _steps[_currentIndex].accentColor,
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: _steps[_currentIndex].primaryColor.withOpacity(0.4),
-                      blurRadius: 15,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: _nextPage,
-                    borderRadius: BorderRadius.circular(16),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 14,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
+              },
+            );
+          }),
+
+          // Contenu principal
+          SafeArea(
+            child: Column(
+              children: [
+                // Header avec bouton Skip
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Plusieurs logos alignés
+                      Row(
                         children: [
-                          Text(
-                            _currentIndex == _steps.length - 1
-                                ? 'Commencer'
-                                : 'Suivant',
-                            style: const TextStyle(
-                              fontFamily: 'Manrope',
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
+                          Opacity(
+                            opacity: 0.8,
+                            child: Image.asset(
+                              "assets/images/app_logo.png",
+                              height: 40,
+                              fit: BoxFit.contain,
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          Icon(
-                            _currentIndex == _steps.length - 1
-                                ? Icons.check_circle_rounded
-                                : Icons.arrow_forward_rounded,
-                            color: Colors.white,
-                            size: 18,
+                          const SizedBox(width: 10), // espace entre logos
+                          Opacity(
+                            opacity: 0.8,
+                            child: Image.asset(
+                              "assets/images/univ-fianara.png",
+                              height: 40,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Opacity(
+                            opacity: 0.8,
+                            child: Image.asset(
+                              "assets/images/agvm.jpg",
+                              height: 40,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Opacity(
+                            opacity: 0.8,
+                            child: Image.asset(
+                              "assets/images/pnud.png",
+                              height: 40,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ],
                       ),
-                    ),
+
+                      // Bouton Skip moderne
+                      if (!isLastPage)
+                        _ModernSkipButton(
+                          onPressed: () {
+                            _pageController.animateToPage(
+                              widget.pages.length - 1,
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.easeInOutCubic,
+                            );
+                          },
+                          textColor: widget.pages[_currentPage].textColor,
+                          accentColor: widget.pages[_currentPage].accentColor,
+                        ),
+                    ],
                   ),
                 ),
-              ),
+
+                // PageView avec contenu
+                Flexible(
+                  child: PageView.builder(
+                    controller: _pageController,
+                    itemCount: widget.pages.length,
+                    onPageChanged: _onPageChanged,
+                    itemBuilder: (context, idx) {
+                      final item = widget.pages[idx];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 20), // remplace Spacer
+
+                              // Image avec effet glassmorphism et animations complexes
+                              SizedBox(
+                                height:
+                                    screenHeight * 0.45, // hauteur contrôlée
+                                child: AnimatedBuilder(
+                                  animation: Listenable.merge([
+                                    _scaleAnimation,
+                                    _rotateAnimation,
+                                    _floatingController,
+                                  ]),
+                                  builder: (context, child) {
+                                    final floatValue = math.sin(
+                                            _floatingController.value *
+                                                2 *
+                                                math.pi) *
+                                        10;
+                                    return Transform.translate(
+                                      offset: Offset(0, floatValue),
+                                      child: Transform.scale(
+                                        scale: _scaleAnimation.value,
+                                        child: Transform.rotate(
+                                          angle: _rotateAnimation.value,
+                                          child: Stack(
+                                            alignment: Alignment.center,
+                                            children: [
+                                              // Cercles décoratifs pulsants
+                                              AnimatedBuilder(
+                                                animation: _pulseController,
+                                                builder: (context, child) {
+                                                  final pulse = 1.0 +
+                                                      (_pulseController.value *
+                                                          0.1);
+                                                  return Transform.scale(
+                                                    scale: pulse,
+                                                    child: Container(
+                                                      width: screenWidth * 0.7,
+                                                      height: screenWidth * 0.7,
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        gradient:
+                                                            RadialGradient(
+                                                          colors: [
+                                                            item.accentColor
+                                                                .withOpacity(
+                                                                    0.2),
+                                                            item.accentColor
+                                                                .withOpacity(
+                                                                    0.0),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+
+                                              // Container glassmorphism
+                                              Container(
+                                                width: screenWidth * 0.65,
+                                                height: screenWidth * 0.65,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  gradient: LinearGradient(
+                                                    begin: Alignment.topLeft,
+                                                    end: Alignment.bottomRight,
+                                                    colors: [
+                                                      item.textColor
+                                                          .withOpacity(0.15),
+                                                      item.textColor
+                                                          .withOpacity(0.05),
+                                                    ],
+                                                  ),
+                                                  border: Border.all(
+                                                    color: item.textColor
+                                                        .withOpacity(0.2),
+                                                    width: 2,
+                                                  ),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: item.accentColor
+                                                          .withOpacity(0.3),
+                                                      blurRadius: 60,
+                                                      spreadRadius: -10,
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: ClipOval(
+                                                  child: Stack(
+                                                    fit: StackFit.expand,
+                                                    children: [
+                                                      Image.asset(
+                                                        item.imagePath,
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                      // Overlay gradient subtil
+                                                      Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          gradient:
+                                                              LinearGradient(
+                                                            begin: Alignment
+                                                                .topCenter,
+                                                            end: Alignment
+                                                                .bottomCenter,
+                                                            colors: [
+                                                              Colors
+                                                                  .transparent,
+                                                              item.bgColor
+                                                                  .withOpacity(
+                                                                      0.1),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+
+                                              // Accent décoratif
+                                              Positioned(
+                                                bottom: 20,
+                                                right: 20,
+                                                child: AnimatedBuilder(
+                                                  animation: _pulseController,
+                                                  builder: (context, child) {
+                                                    return Container(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              16),
+                                                      decoration: BoxDecoration(
+                                                        color: item.accentColor,
+                                                        shape: BoxShape.circle,
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: item
+                                                                .accentColor
+                                                                .withOpacity(
+                                                                    0.6),
+                                                            blurRadius: 20 *
+                                                                _pulseController
+                                                                    .value,
+                                                            spreadRadius: 5 *
+                                                                _pulseController
+                                                                    .value,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      child: Icon(
+                                                        _getIconForPage(idx),
+                                                        color: Colors.white,
+                                                        size: 28,
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+
+                              const SizedBox(height: 30),
+
+                              // Textes avec animations
+                              FadeTransition(
+                                opacity: _fadeAnimation,
+                                child: SlideTransition(
+                                  position: _slideAnimation,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      // Titre avec effet de surbrillance
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20, vertical: 8),
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              item.accentColor
+                                                  .withOpacity(0.15),
+                                              item.accentColor
+                                                  .withOpacity(0.05),
+                                            ],
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                        child: Text(
+                                          item.title,
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontFamily: 'Manrope',
+                                            fontSize: screenHeight * 0.03,
+                                            fontWeight: FontWeight.w900,
+                                            color: item.textColor,
+                                            height: 1.2,
+                                            letterSpacing: -0.5,
+                                          ),
+                                        ),
+                                      ),
+
+                                      const SizedBox(height: 20),
+
+                                      // Description
+                                      Container(
+                                        constraints:
+                                            const BoxConstraints(maxWidth: 340),
+                                        child: Text(
+                                          item.description,
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontFamily: 'Manrope',
+                                            fontSize: screenHeight * 0.0185,
+                                            fontWeight: FontWeight.w500,
+                                            color:
+                                                item.textColor.withOpacity(0.8),
+                                            height: 1.6,
+                                            letterSpacing: 0.2,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(height: 40),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                // Indicateurs personnalisés avec animations
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: widget.pages.asMap().entries.map((entry) {
+                      final isActive = _currentPage == entry.key;
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeInOutCubic,
+                        width: isActive ? 40 : 10,
+                        height: 10,
+                        margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                        decoration: BoxDecoration(
+                          gradient: isActive
+                              ? LinearGradient(
+                                  colors: [
+                                    widget.pages[_currentPage].accentColor,
+                                    widget.pages[_currentPage].accentColor
+                                        .withOpacity(0.6),
+                                  ],
+                                )
+                              : null,
+                          color: !isActive
+                              ? widget.pages[_currentPage].textColor
+                                  .withOpacity(0.2)
+                              : null,
+                          borderRadius: BorderRadius.circular(5),
+                          boxShadow: isActive
+                              ? [
+                                  BoxShadow(
+                                    color: widget
+                                        .pages[_currentPage].accentColor
+                                        .withOpacity(0.5),
+                                    blurRadius: 10,
+                                    spreadRadius: 1,
+                                  ),
+                                ]
+                              : null,
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+
+                // Boutons d'action modernes
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 32),
+                  child: isLastPage
+                      ? _PremiumStartButton(
+                          onPressed: () {
+                            widget.onFinish?.call();
+                          },
+                          bgColor: widget.pages[_currentPage].accentColor,
+                          textColor: Colors.white,
+                        )
+                      : _PremiumNextButton(
+                          onPressed: () {
+                            _pageController.animateToPage(
+                              _currentPage + 1,
+                              curve: Curves.easeInOutCubic,
+                              duration: const Duration(milliseconds: 500),
+                            );
+                          },
+                          textColor: widget.pages[_currentPage].textColor,
+                          accentColor: widget.pages[_currentPage].accentColor,
+                        ),
+                ),
+              ],
             ),
-          ],
-        );
-      },
+          ),
+        ],
+      ),
+    ),);
+  }
+
+  IconData _getIconForPage(int index) {
+    switch (index) {
+      case 0:
+        return Icons.location_city_rounded;
+      case 1:
+        return Icons.directions_car_rounded;
+      case 2:
+        return Icons.local_parking_rounded;
+      case 3:
+        return Icons.shield_rounded;
+      case 4:
+        return Icons.people_rounded;
+      default:
+        return Icons.star_rounded;
+    }
+  }
+}
+
+// Bouton Skip moderne
+class _ModernSkipButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  final Color textColor;
+  final Color accentColor;
+
+  const _ModernSkipButton({
+    required this.onPressed,
+    required this.textColor,
+    required this.accentColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          decoration: BoxDecoration(
+            color: textColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: textColor.withOpacity(0.2),
+              width: 1.5,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Aloha',
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  color: textColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.3,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                Icons.arrow_forward_rounded,
+                color: textColor,
+                size: 16,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
 
-// Classes de données simplifiées
-class OnboardingStep {
-  final String title;
-  final String subtitle;
-  final IconData? icon; 
-  final String? imagePath;
-  final Color primaryColor;
+// Bouton Suivant premium
+class _PremiumNextButton extends StatefulWidget {
+  final VoidCallback onPressed;
+  final Color textColor;
   final Color accentColor;
-  final List<String> features;
-OnboardingStep({
-    required this.title,
-    required this.subtitle,
-    required this.primaryColor,
+
+  const _PremiumNextButton({
+    required this.onPressed,
+    required this.textColor,
     required this.accentColor,
-    required this.features,
-    this.icon,
-    this.imagePath,
-  }) : assert(icon != null || imagePath != null, 
-              'Vous devez fournir soit un "icon", soit un "imagePath"');
-}
-
-// Custom Painter simplifié
-class BackgroundPatternPainter extends CustomPainter {
-  final double progress;
-  final Color primaryColor;
-  final Color accentColor;
-
-  BackgroundPatternPainter(this.progress, this.primaryColor, this.accentColor);
+  });
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
+  State<_PremiumNextButton> createState() => _PremiumNextButtonState();
+}
 
-    // Cercles flottants simples
-    for (int i = 0; i < 6; i++) {
-      final offset = progress + (i * 0.5);
-      final x = size.width * 0.8 + math.sin(offset) * 30;
-      final y = size.height * 0.2 + i * 80 + math.cos(offset * 0.7) * 20;
-      
-      paint.color = primaryColor.withOpacity(0.1);
-      canvas.drawCircle(
-        Offset(x, y),
-        20 - (i * 2),
-        paint,
-      );
-    }
+class _PremiumNextButtonState extends State<_PremiumNextButton>
+    with SingleTickerProviderStateMixin {
+  bool _isPressed = false;
+  late AnimationController _shimmerController;
 
-    // Points de connexion
-    for (int i = 0; i < 12; i++) {
-      final x = (i * 40.0) % size.width;
-      final y = size.height * 0.7 + math.sin(progress * 2 + i * 0.5) * 15;
-      
-      paint.color = accentColor.withOpacity(0.15);
-      canvas.drawCircle(Offset(x, y), 3, paint);
-    }
+  @override
+  void initState() {
+    super.initState();
+    _shimmerController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    )..repeat();
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  void dispose() {
+    _shimmerController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) {
+        setState(() => _isPressed = false);
+        widget.onPressed();
+      },
+      onTapCancel: () => setState(() => _isPressed = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        transform: Matrix4.identity()..scale(_isPressed ? 0.96 : 1.0),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                widget.accentColor.withOpacity(0.2),
+                widget.accentColor.withOpacity(0.1),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: widget.accentColor.withOpacity(0.4),
+              width: 2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: widget.accentColor.withOpacity(0.2),
+                blurRadius: 20,
+                spreadRadius: 0,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Manaraka',
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  color: widget.textColor,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: widget.accentColor.withOpacity(0.3),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.arrow_forward_rounded,
+                  color: widget.textColor,
+                  size: 20,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Bouton Commencer premium
+class _PremiumStartButton extends StatefulWidget {
+  final VoidCallback onPressed;
+  final Color bgColor;
+  final Color textColor;
+
+  const _PremiumStartButton({
+    required this.onPressed,
+    required this.bgColor,
+    required this.textColor,
+  });
+
+  @override
+  State<_PremiumStartButton> createState() => _PremiumStartButtonState();
+}
+
+class _PremiumStartButtonState extends State<_PremiumStartButton>
+    with SingleTickerProviderStateMixin {
+  bool _isPressed = false;
+  late AnimationController _pulseController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) {
+        setState(() => _isPressed = false);
+        widget.onPressed();
+      },
+      onTapCancel: () => setState(() => _isPressed = false),
+      child: AnimatedBuilder(
+        animation: _pulseController,
+        builder: (context, child) {
+          final pulse = 1.0 + (_pulseController.value * 0.03);
+          return Transform.scale(
+            scale: _isPressed ? 0.96 : pulse,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    widget.bgColor,
+                    widget.bgColor.withOpacity(0.8),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: widget.bgColor.withOpacity(0.5),
+                    blurRadius: 30,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 10),
+                  ),
+                  BoxShadow(
+                    color: widget.bgColor.withOpacity(0.3),
+                    blurRadius: 60,
+                    spreadRadius: 10,
+                    offset: const Offset(0, 20),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Anomboka',
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      color: widget.textColor,
+                      fontSize: 19,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.8,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: widget.textColor.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                    Icons.play_arrow_rounded,
+
+                      color: widget.textColor,
+                      size: 22,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class OnboardingPageModel {
+  final String title;
+  final String description;
+  final String imagePath;
+  final Color bgColor;
+  final Color accentColor;
+  final Color textColor;
+
+  OnboardingPageModel({
+    required this.title,
+    required this.description,
+    required this.imagePath,
+    required this.bgColor,
+    required this.accentColor,
+    this.textColor = Colors.white,
+  });
 }

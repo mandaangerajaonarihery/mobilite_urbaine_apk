@@ -5,6 +5,7 @@ class Parking {
   final String nomParking;
   final String etat;
   final int? vehiculeMax;
+  final int tarifHoraire;
   final List<List<LatLng>> localisation;
 
   Parking({
@@ -12,6 +13,7 @@ class Parking {
     required this.nomParking,
     required this.etat,
     this.vehiculeMax,
+    required this.tarifHoraire,
     required this.localisation,
   });
 
@@ -33,7 +35,24 @@ class Parking {
       nomParking: json['nom_parking'] ?? '',
       etat: json['etat'] ?? 'libre',
       vehiculeMax: json['vehicule_max'],
+      tarifHoraire: json['tarif_horaire'],
       localisation: localisationParsed,
     );
   }
+
+  LatLng get centroid {
+    if (localisation.isEmpty || localisation[0].isEmpty) {
+      return LatLng(0, 0);
+    }
+    final polygon = localisation[0];
+    double latSum = 0;
+    double lngSum = 0;
+    for (var point in polygon) {
+      latSum += point.latitude;
+      lngSum += point.longitude;
+    }
+    return LatLng(latSum / polygon.length, lngSum / polygon.length);
+  }
+
+  get municipalityId => null; // A compléter si nécessaire
 }

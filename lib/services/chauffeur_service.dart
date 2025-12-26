@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:all_pnud/models/chauffeur.dart';
-
+import 'package:all_pnud/constantes/api.dart';
 class ChauffeurService {
-  final String baseUrl = 'https://gateway.tsirylab.com/serviceflotte/chauffeurs';
+  final String baseUrl = '${Api.baseUrl}/chauffeurs';
 
   /// Récupérer tous les chauffeurs d'une municipalité
   Future<List<Chauffeur>> getChauffeursByMunicipality(int municipalityId) async {
@@ -21,14 +21,44 @@ class ChauffeurService {
   }
 
   /// Récupérer un chauffeur via son CIN (dans une municipalité)
-  Future<Chauffeur?> getChauffeurByCIN(int municipalityId, String cinText) async {
-    final chauffeurs = await getChauffeursByMunicipality(municipalityId);
-    try {
-      return chauffeurs.firstWhere((c) => c.cin == cinText);
-    } catch (e) {
+ /// Récupérer un chauffeur via son CIN (dans une municipalité)
+Future<Chauffeur?> getChauffeurByCIN( String cinText) async {
+  try {
+    final url = Uri.parse('$baseUrl/search/cin/$cinText');
+    final response = await http.get(url, headers: {'accept': 'application/json'});
+
+    print("➡️ [API CALL] GET $url");
+    print("⬅️ [RESPONSE CODE] ${response.statusCode}");
+    print("⬅️ [RESPONSE BODY] ${response.body}");
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body)['data'];
+      final chauffeurData = data['chauffeur'];
+
+      if (chauffeurData == null) return null;
+
+      final chauffeur = Chauffeur.fromJson(chauffeurData);
+
+      // Vérifier la municipalité pour rester cohérent avec l'ancienne logique
+      // if (chauffeur.municipalityId != municipalityId.toString()) {
+      //   print("⚠️ Chauffeur trouvé mais n'appartient pas à la municipalité demandée");
+      //   return null;
+      // }
+
+      return chauffeur;
+    } else if (response.statusCode == 404) {
+      print("⚠️ Chauffeur non trouvé pour CIN: $cinText");
+      return null;
+    } else {
+      print("❌ Erreur API (${response.statusCode}): ${response.body}");
       return null;
     }
+  } catch (e) {
+    print("❌ Exception lors de la récupération du chauffeur par CIN: $e");
+    return null;
   }
+}
+
 
   /// Créer un chauffeur (POST /chauffeurs)
   Future<Chauffeur?> createChauffeur({

@@ -8,18 +8,18 @@ import 'package:mime/mime.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:all_pnud/constantes/api.dart';
 import 'package:all_pnud/models/cooperative.dart';
 import 'package:all_pnud/models/affectation.dart';
 
 /// 🔹 Service principal pour les coopératives
 class CooperativeService {
-  final String baseUrl = "https://gateway.tsirylab.com/serviceflotte";
+  final String baseUrl = Api.baseUrl;
 
   Map<String, String> get _baseHeaders => {
-    "Content-Type": "application/json",
-    "accept": "application/json",
-  };
+        "Content-Type": "application/json",
+        "accept": "application/json",
+      };
 
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -63,140 +63,150 @@ class CooperativeService {
   //     return null;
   //   }
   // }
-Future<Cooperative?> getCooperativeByCitizenId(String citizenId) async {
-  final token = await _getToken();
-  if (token == null) return null;
+  Future<Cooperative?> getCooperativeByCitizenId(String citizenId) async {
+    final token = await _getToken();
+    if (token == null) return null;
 
-  final urlSpecific = Uri.parse("$baseUrl/cooperatives/citizen/$citizenId");
-  final headers = {..._baseHeaders, "Authorization": "Bearer $token"};
+    final urlSpecific = Uri.parse("$baseUrl/cooperatives/citizen/$citizenId");
+    final headers = {..._baseHeaders, "Authorization": "Bearer $token"};
 
-  try {
-    final response = await http.get(urlSpecific, headers: headers);
-    if (response.statusCode == 200) {
-      final decoded = jsonDecode(response.body);
-      if (decoded['data'] != null) {
-        return Cooperative.fromJson(decoded['data']);
+    try {
+      final response = await http.get(urlSpecific, headers: headers);
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['data'] != null) {
+          return Cooperative.fromJson(decoded['data']);
+        } else {
+          debugPrint("⚠️ Endpoint spécifique renvoie null, fallback activé.");
+        }
+      } else if (response.statusCode == 404) {
+        debugPrint("⚠️ Aucune coopérative trouvée via endpoint spécifique.");
       } else {
-        debugPrint("⚠️ Endpoint spécifique renvoie null, fallback activé.");
+        debugPrint(
+            "❌ Erreur API spécifique: ${response.statusCode} - ${response.body}");
       }
-    } else if (response.statusCode == 404) {
-      debugPrint("⚠️ Aucune coopérative trouvée via endpoint spécifique.");
-    } else {
-      debugPrint("❌ Erreur API spécifique: ${response.statusCode} - ${response.body}");
+    } catch (e) {
+      debugPrint("❌ Erreur inattendue sur endpoint spécifique: $e");
     }
-  } catch (e) {
-    debugPrint("❌ Erreur inattendue sur endpoint spécifique: $e");
-  }
 
-  //Fallback : récupère toutes les coopératives
-  final urlAll = Uri.parse("$baseUrl/cooperatives");
-  try {
-    final responseAll = await http.get(urlAll, headers: headers);
-    if (responseAll.statusCode == 200) {
-      final List<dynamic> decodedList = jsonDecode(responseAll.body);
-      final coopJson = decodedList.firstWhere(
-        (c) => c['id_citizen'] == citizenId,
-        orElse: () => null,
-      );
-      if (coopJson != null) {
-        return Cooperative.fromJson(coopJson);
+    //Fallback : récupère toutes les coopératives
+    final urlAll = Uri.parse("$baseUrl/cooperatives");
+    try {
+      final responseAll = await http.get(urlAll, headers: headers);
+      if (responseAll.statusCode == 200) {
+        final List<dynamic> decodedList = jsonDecode(responseAll.body);
+        final coopJson = decodedList.firstWhere(
+          (c) => c['id_citizen'] == citizenId,
+          orElse: () => null,
+        );
+        if (coopJson != null) {
+          return Cooperative.fromJson(coopJson);
+        } else {
+          debugPrint(
+              "⚠️ Aucune coopérative trouvée pour le citizenId $citizenId.");
+          return null;
+        }
       } else {
-        debugPrint("⚠️ Aucune coopérative trouvée pour le citizenId $citizenId.");
+        debugPrint("❌ Erreur API sur /cooperatives: ${responseAll.statusCode}");
         return null;
       }
-    } else {
-      debugPrint("❌ Erreur API sur /cooperatives: ${responseAll.statusCode}");
+    } catch (e) {
+      debugPrint("❌ Erreur inattendue sur /cooperatives: $e");
       return null;
     }
-  } catch (e) {
-    debugPrint("❌ Erreur inattendue sur /cooperatives: $e");
-    return null;
   }
-}
 
-/// Récupère toutes les coopératives
-Future<List<Cooperative>> getAllCooperatives() async {
-  final token = await _getToken();
-  if (token == null) return [];
+  /// Récupère toutes les coopératives
+  Future<List<Cooperative>> getAllCooperatives() async {
+    final token = await _getToken();
+    if (token == null) return [];
 
-  final url = Uri.parse("$baseUrl/cooperatives");
-  final headers = {
-    "Content-Type": "application/json",
-    "accept": "application/json",
-    "Authorization": "Bearer $token",
-  };
+    final url = Uri.parse("$baseUrl/cooperatives");
+    final headers = {
+      "Content-Type": "application/json",
+      "accept": "application/json",
+      "Authorization": "Bearer $token",
+    };
 
-  try {
-    final response = await http.get(url, headers: headers);
-    if (response.statusCode == 200) {
-      final List<dynamic> decoded = jsonDecode(response.body);
-      return decoded.map((json) => Cooperative.fromJson(json)).toList();
-    } else {
-      debugPrint("❌ Erreur API /cooperatives: ${response.statusCode} - ${response.body}");
-      return [];
-    }
-  } catch (e) {
-    debugPrint("❌ Erreur réseau lors de la récupération des coopératives: $e");
-    return [];
-  }
-}
-Future<List<Cooperative>> getCooperativesByMunicipality(int municipalityId) async {
-  final token = await _getToken();
-  if (token == null) return [];
-
-  final url = Uri.parse("$baseUrl/cooperatives/municipality/$municipalityId");
-  final headers = {
-    "Content-Type": "application/json",
-    "accept": "application/json",
-    "Authorization": "Bearer $token",
-  };
-
-  try {
-    final response = await http.get(url, headers: headers);
-    if (response.statusCode == 200) {
-      final List<dynamic> decoded = jsonDecode(response.body);
-      return decoded.map((json) => Cooperative.fromJson(json)).toList();
-    } else {
-      debugPrint("❌ Erreur API /cooperatives/municipality: ${response.statusCode} - ${response.body}");
-      return [];
-    }
-  } catch (e) {
-    debugPrint("❌ Erreur réseau lors de la récupération des coopératives: $e");
-    return [];
-  }
-}
-
- Future<List<Cooperative>> getCooperativesByStatus(
-    String status, int municipalityId) async {
-  final token = await _getToken();
-  if (token == null) return [];
-
-  final url = Uri.parse(
-      "$baseUrl/cooperatives/status/$status/municipality/$municipalityId");
-  final headers = {
-    "Content-Type": "application/json",
-    "accept": "application/json",
-    "Authorization": "Bearer $token",
-  };
-
-  try {
-    final response = await http.get(url, headers: headers);
-    if (response.statusCode == 200) {
-      final List<dynamic> decoded = jsonDecode(response.body);
-      return decoded.map((json) => Cooperative.fromJson(json)).toList();
-    } else if (response.statusCode == 404) {
-      debugPrint("⚠️ Aucune coopérative trouvée pour status=$status et municipalityId=$municipalityId.");
-      return [];
-    } else {
+    try {
+      final response = await http.get(url, headers: headers);
+      if (response.statusCode == 200) {
+        final List<dynamic> decoded = jsonDecode(response.body);
+        return decoded.map((json) => Cooperative.fromJson(json)).toList();
+      } else {
+        debugPrint(
+            "❌ Erreur API /cooperatives: ${response.statusCode} - ${response.body}");
+        return [];
+      }
+    } catch (e) {
       debugPrint(
-          "❌ Erreur API /cooperatives/status: ${response.statusCode} - ${response.body}");
+          "❌ Erreur réseau lors de la récupération des coopératives: $e");
       return [];
     }
-  } catch (e) {
-    debugPrint("❌ Erreur réseau lors de la récupération des coopératives filtrées: $e");
-    return [];
   }
-}
+
+  Future<List<Cooperative>> getCooperativesByMunicipality(
+      int municipalityId) async {
+    final token = await _getToken();
+    if (token == null) return [];
+
+    final url = Uri.parse("$baseUrl/cooperatives/municipality/$municipalityId");
+    final headers = {
+      "Content-Type": "application/json",
+      "accept": "application/json",
+      "Authorization": "Bearer $token",
+    };
+
+    try {
+      final response = await http.get(url, headers: headers);
+      if (response.statusCode == 200) {
+        final List<dynamic> decoded = jsonDecode(response.body);
+        return decoded.map((json) => Cooperative.fromJson(json)).toList();
+      } else {
+        debugPrint(
+            "❌ Erreur API /cooperatives/municipality: ${response.statusCode} - ${response.body}");
+        return [];
+      }
+    } catch (e) {
+      debugPrint(
+          "❌ Erreur réseau lors de la récupération des coopératives: $e");
+      return [];
+    }
+  }
+
+  Future<List<Cooperative>> getCooperativesByStatus(
+      String status, int municipalityId) async {
+    final token = await _getToken();
+    if (token == null) return [];
+
+    final url = Uri.parse(
+        "$baseUrl/cooperatives/status/$status/municipality/$municipalityId");
+    final headers = {
+      "Content-Type": "application/json",
+      "accept": "application/json",
+      "Authorization": "Bearer $token",
+    };
+
+    try {
+      final response = await http.get(url, headers: headers);
+      if (response.statusCode == 200) {
+        final List<dynamic> decoded = jsonDecode(response.body);
+        return decoded.map((json) => Cooperative.fromJson(json)).toList();
+      } else if (response.statusCode == 404) {
+        debugPrint(
+            "⚠️ Aucune coopérative trouvée pour status=$status et municipalityId=$municipalityId.");
+        return [];
+      } else {
+        debugPrint(
+            "❌ Erreur API /cooperatives/status: ${response.statusCode} - ${response.body}");
+        return [];
+      }
+    } catch (e) {
+      debugPrint(
+          "❌ Erreur réseau lors de la récupération des coopératives filtrées: $e");
+      return [];
+    }
+  }
 
   Future<bool> registerCooperative({
     required String name,
@@ -233,7 +243,7 @@ Future<List<Cooperative>> getCooperativesByMunicipality(int municipalityId) asyn
     debugPrint("num_cnaps: $numCnaps");
     debugPrint("state: $state");
     debugPrint("droit_adhesion: $droitAdhesion");
-   
+
     debugPrint("------------------------------------------");
 
     request.fields.addAll({
@@ -245,17 +255,17 @@ Future<List<Cooperative>> getCooperativesByMunicipality(int municipalityId) asyn
       'id_citizen': citizenId,
       'municipality_id': municipalityId.toString(),
       'nif': nif,
-      'state' :state, 
+      'state': state,
       'num_cnaps': numCnaps,
       'droit_adhesion': droitAdhesion.toString(),
-      
     });
 
     Future<void> addFileToRequest(String fieldName, XFile? file) async {
       if (file != null) {
         // Correction ici : assigner un nom par défaut si file.name est vide
         String fileName = file.name.isNotEmpty ? file.name : '$fieldName.file';
-        debugPrint("Fichier ajouté : champ='$fieldName', nom='$fileName', taille=${await file.length()} octets");
+        debugPrint(
+            "Fichier ajouté : champ='$fieldName', nom='$fileName', taille=${await file.length()} octets");
         final mimeType = lookupMimeType(fileName) ?? 'application/octet-stream';
         request.files.add(
           http.MultipartFile.fromBytes(
@@ -310,7 +320,7 @@ class TransportType {
 
 /// 🔹 Service pour récupérer les types de transport
 class TransportTypeService {
-  final String baseUrl = "https://gateway.tsirylab.com/serviceflotte";
+  final String baseUrl =Api.baseUrl;
 
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -321,11 +331,13 @@ class TransportTypeService {
     return token;
   }
 
-  Future<List<TransportType>> getTransportTypesByMunicipality(int municipalityId) async {
+  Future<List<TransportType>> getTransportTypesByMunicipality(
+      int municipalityId) async {
     final token = await _getToken();
     if (token == null) return [];
 
-    final url = Uri.parse("$baseUrl/typetransports/municipality/$municipalityId");
+    final url =
+        Uri.parse("$baseUrl/typetransports/municipality/$municipalityId");
     final headers = {
       "Content-Type": "application/json",
       "accept": "application/json",
@@ -349,5 +361,4 @@ class TransportTypeService {
       return [];
     }
   }
- 
 }

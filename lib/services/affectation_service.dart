@@ -1,11 +1,11 @@
-
 import 'dart:convert'; // pour jsonEncode et jsonDecode
 import 'package:flutter/foundation.dart'; // pour debugPrint
 import 'package:http/http.dart' as http; // pour http.get, http.put, etc.
 import 'package:shared_preferences/shared_preferences.dart'; // pour SharedPreferences
 import 'package:all_pnud/models/affectation.dart'; // ton modèle Affectation
+import 'package:all_pnud/constantes/api.dart';
 class AffectationService {
-  final String baseUrl = "https://gateway.tsirylab.com/serviceflotte";
+  final String baseUrl =Api.baseUrl;
 
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -26,7 +26,8 @@ class AffectationService {
     };
   }
 
-  Future<List<Affectation>> getAffectationsByCooperative(String cooperativeId) async {
+  Future<List<Affectation>> getAffectationsByCooperative(
+      String cooperativeId) async {
     final headers = await _getHeaders();
     if (headers == null) return [];
 
@@ -91,13 +92,15 @@ class AffectationService {
     };
 
     try {
-      final response = await http.post(url, headers: headers, body: jsonEncode(bodyMap));
+      final response =
+          await http.post(url, headers: headers, body: jsonEncode(bodyMap));
       return response.statusCode == 201;
     } catch (e) {
       debugPrint("❌ Erreur création affectation: $e");
       return false;
     }
   }
+
   Future<bool> payerAffectation(int affectationId) async {
     final headers = await _getHeaders();
     if (headers == null) return false;

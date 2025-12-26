@@ -14,7 +14,7 @@ import 'package:http/http.dart' as http;
 import 'dart:typed_data';
 import 'package:all_pnud/services/chauffeur_service.dart';
 import 'package:all_pnud/services/licence_service.dart';
-
+import 'package:all_pnud/services/affectation_nonbus__service.dart'as nonBusService;
 // Couleurs de la charte graphique
 class AppColors {
   static const Color primary = Color(0xFF098E00);
@@ -89,6 +89,18 @@ class _DemandeVehiculeScreenState extends State<DemandeVehiculeScreen> {
       "Patente recto",
       "Patente verso",
     ],
+    "Bajaj": [
+      "Assurance recto",
+      "Assurance verso",
+      "Carte grise recto",
+      "Carte grise verso",
+      "Visite technique recto",
+      "Visite technique verso",
+      "Demande manuscrite recto",
+      "Demande manuscrite verso",
+      "Patente recto",
+      "Patente verso",
+    ],
     "Moto": [
       "Facture moto recto",
       "Facture moto verso",
@@ -136,7 +148,7 @@ class _DemandeVehiculeScreenState extends State<DemandeVehiculeScreen> {
     if (municipalityId == null) return;
 
     final chauffeur =
-        await _chauffeurService.getChauffeurByCIN(municipalityId, cinText);
+        await _chauffeurService.getChauffeurByCIN( cinText);
 
     setState(() => _selectedChauffeur = chauffeur);
 
@@ -293,7 +305,7 @@ class _DemandeVehiculeScreenState extends State<DemandeVehiculeScreen> {
           assuranceVerso: assuranceVerso,
           dateExpirationAssurance: dateAssuranceController.text,
         );
-      } else if (_selectedTypeVehicule == "Taxi") {
+      } else if (_selectedTypeVehicule == "Taxi" || _selectedTypeVehicule == "Bajaj") {
         final authProvider = Provider.of<AuthProvider>(context, listen: false);
         final token = authProvider.token ?? '';
 
@@ -310,6 +322,33 @@ class _DemandeVehiculeScreenState extends State<DemandeVehiculeScreen> {
           files: multipartFiles,
           token: token,
         );
+        if (success && _selectedChauffeur != null) {
+      print("✅ Licence créée. Tentative de création de l'affectation...");
+
+      // On crée une instance du service
+     final affectationService = nonBusService.AffectationService();
+
+      // On appelle la méthode pour créer l'affectation
+      // Note : On ne vérifie pas le retour ici, car le succès principal est la création de la licence.
+      // On pourrait ajouter une gestion d'erreur plus fine si nécessaire.
+ final bool affectationSuccess = await affectationService.createAffectationNonBus(
+  // On peut maintenant utiliser '!' en toute sécurité car on a vérifié que l'id n'est pas null
+  idChauffeur: _selectedChauffeur!.id!, 
+  immatriculation: _selectedImmatriculation!,
+  token: token,
+);
+
+
+// Maintenant, on peut afficher le résultat
+print("📄 Résultat de la création de l'affectation : $affectationSuccess");
+
+// BONUS : Tu peux même ajouter une logique en fonction de ce résultat
+if (affectationSuccess) {
+  print("✅ L'affectation a bien été enregistrée.");
+} else {
+  print("⚠️ La création de la licence a réussi, mais l'affectation a échoué.");
+}
+    }
       } else if (_selectedTypeVehicule == "Bus") {
         success = await _vehiculeService.createVehiculeWithDocs(
           vehiculeData: {

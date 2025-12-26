@@ -19,18 +19,26 @@ dependencies:
   jwt_decoder: ^2.0.1
   image_picker: ^1.2.0
   file_selector: ^0.9.1
+  socket_io_client: ^2.0.2  
+  badges: ^3.1.2
+  showcaseview: ^3.0.0
   flutter_map: ^8.2.1
   latlong2: ^0.9.1
+  flutter_tts: ^3.8.3  # Pour la synthèse vocale (La voix de Google/Siri)
+  turf: ^0.0.9
   geolocator: ^12.0.0
   qr_code_scanner_plus: ^2.0.12
   google_fonts: ^6.3.2
   qr_flutter: ^4.1.0
+  concentric_transition: ^1.0.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
   flutter_launcher_icons: ^0.13.1   # ✅ Ajouté ici
+  flutter_inappwebview: ^6.0.0
+  shared_preferences: ^2.2.0
 
 # Configuration du package pour générer les icônes
 flutter_launcher_icons:
@@ -47,4 +55,17 @@ flutter:
     - assets/images/app_logo.png
     - assets/images/scan.png
     - assets/images/user.jpg
-    - assets/images/
+    - assets/images/parkingtaxi.jpg
+    - assets/images/payementsecure.jpg
+    - assets/images/transport_commun.jpg
+    - assets/images/villemieuxorganise.jpg
+    - assets/images/connectcommune.jpg
+    - assets/images/agvm.jpg
+    - assets/images/univ-fianara.png
+    - assets/images/coope.png
+    - assets/images/proprietaire.png
+    - assets/images/ARRET.jpg
+    - assets/images/Antananarivo.jpg
+    - assets/images/agent.jpg
+    - assets/images/carte.jpg
+    - assets/images/chauffeur.png

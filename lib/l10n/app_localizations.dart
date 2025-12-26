@@ -95,11 +95,59 @@ abstract class AppLocalizations {
     Locale('fr')
   ];
 
+  /// No description provided for @startButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Hiditra'**
+  String get startButton;
+
   /// No description provided for @landingTitle.
   ///
   /// In en, this message translates to:
   /// **'Manavao ny Fitantanana ny Fitaterana an-tanàn-dehibe'**
   String get landingTitle;
+
+  /// No description provided for @login.
+  ///
+  /// In en, this message translates to:
+  /// **'Hiditra'**
+  String get login;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Hivoaka'**
+  String get logout;
+
+  /// No description provided for @connectedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Niala soa aman-tsara'**
+  String get connectedSuccess;
+
+  /// No description provided for @languageFr.
+  ///
+  /// In en, this message translates to:
+  /// **'Frantsay'**
+  String get languageFr;
+
+  /// No description provided for @languageMg.
+  ///
+  /// In en, this message translates to:
+  /// **'Malagasy'**
+  String get languageMg;
+
+  /// No description provided for @lightMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Mazava'**
+  String get lightMode;
+
+  /// No description provided for @darkMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Maizina'**
+  String get darkMode;
 
   /// No description provided for @landingWelcome.
   ///
@@ -218,7 +266,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginFailed.
   ///
   /// In en, this message translates to:
-  /// **'Tsy nahomby ny fidirana. Hamarino azafady ny mombam-baovao nampidirinao.'**
+  /// **'Tsy nahomby ny fidirana. Hamarino azafady ny mailaka na teny miafina nampidirinao.'**
   String get loginFailed;
 
   /// No description provided for @error.
@@ -232,6 +280,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fomba fanehoana: afaka mampiasa adiresy mailaka sy tenimiafina rehetra ianao'**
   String get demoInfo;
+
+  /// No description provided for @cooperativeSpace.
+  ///
+  /// In en, this message translates to:
+  /// **'Sehatra ho an\'ny kaoperativa'**
+  String get cooperativeSpace;
+
+  /// No description provided for @cooperativeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Tantano ny fikambananareo amin’ny fitaterana, araho ny fiara voasoratra anarana ary ampanjary ny asanareo.'**
+  String get cooperativeDescription;
+
+  /// No description provided for @cooperativeFeature1.
+  ///
+  /// In en, this message translates to:
+  /// **'Fitantanana ny fiara voasoratra anarana'**
+  String get cooperativeFeature1;
+
+  /// No description provided for @cooperativeFeature2.
+  ///
+  /// In en, this message translates to:
+  /// **'Tabilao famakafakana'**
+  String get cooperativeFeature2;
+
+  /// No description provided for @cooperativeFeature3.
+  ///
+  /// In en, this message translates to:
+  /// **'Fanaraha-maso ny vola miditra'**
+  String get cooperativeFeature3;
+
+  /// No description provided for @cooperativeFeature4.
+  ///
+  /// In en, this message translates to:
+  /// **'Fitantanana ny mpamily'**
+  String get cooperativeFeature4;
+
+  /// No description provided for @proprietaireSpace.
+  ///
+  /// In en, this message translates to:
+  /// **'Sehatra ho an\'ny tompony fiara'**
+  String get proprietaireSpace;
+
+  /// No description provided for @proprietaireDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Soraty anarana ny fiaranao, tantano ny fahazoan-dàlana ary araho ny satan’ny fangatahanao.'**
+  String get proprietaireDescription;
+
+  /// No description provided for @proprietaireFeature1.
+  ///
+  /// In en, this message translates to:
+  /// **'Fisoratana anarana fiara'**
+  String get proprietaireFeature1;
+
+  /// No description provided for @proprietaireFeature2.
+  ///
+  /// In en, this message translates to:
+  /// **'Fangatahana fahazoan-dàlana'**
+  String get proprietaireFeature2;
+
+  /// No description provided for @proprietaireFeature3.
+  ///
+  /// In en, this message translates to:
+  /// **'Fanaraha-maso ny antontan-taratasy'**
+  String get proprietaireFeature3;
+
+  /// No description provided for @proprietaireFeature4.
+  ///
+  /// In en, this message translates to:
+  /// **'Tantaran’ny fifanakalozana'**
+  String get proprietaireFeature4;
+
+  /// No description provided for @chauffeurSpace.
+  ///
+  /// In en, this message translates to:
+  /// **'Sehatra mpamily'**
+  String get chauffeurSpace;
+
+  /// No description provided for @chauffeurDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Midira amin’ny dianao, araho ny vola miditra ary tantano ny fahafahanao miasa.'**
+  String get chauffeurDescription;
+
+  /// No description provided for @chauffeurFeature1.
+  ///
+  /// In en, this message translates to:
+  /// **'Fitantanana ny dia'**
+  String get chauffeurFeature1;
+
+  /// No description provided for @chauffeurFeature2.
+  ///
+  /// In en, this message translates to:
+  /// **'Fanaraha-maso ny vola miditra'**
+  String get chauffeurFeature2;
+
+  /// No description provided for @chauffeurFeature3.
+  ///
+  /// In en, this message translates to:
+  /// **'Tantaran’ny dia'**
+  String get chauffeurFeature3;
+
+  /// No description provided for @chauffeurFeature4.
+  ///
+  /// In en, this message translates to:
+  /// **'Fitantanana ny fahafahana miasa'**
+  String get chauffeurFeature4;
+
+  /// No description provided for @projectBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'TETIKASA FITATERANA AN-TANÀNA'**
+  String get projectBadge;
+
+  /// No description provided for @mobiliteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'FITATERANA AN-TANÀNA'**
+  String get mobiliteTitle;
+
+  /// No description provided for @mobiliteSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sehatra nomerika ho an’ny fitaterana an-tanàna marani-tsaina'**
+  String get mobiliteSubtitle;
+
+  /// No description provided for @accessButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Hiditra'**
+  String get accessButton;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

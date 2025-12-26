@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-
+import 'package:all_pnud/screens/onboarding_screen.dart';
+import 'package:all_pnud/providers/notification_provider.dart';
 import 'package:all_pnud/providers/auth_provider.dart';
 import 'package:all_pnud/providers/theme_provider.dart';
 import 'package:all_pnud/providers/locale_provider.dart';
 import 'package:all_pnud/router/app_router.dart';
-import 'package:all_pnud/theme/theme.dart';
+import 'package:all_pnud/theme/app_theme.dart';
 import 'package:all_pnud/l10n/app_localizations.dart';
-import 'package:all_pnud/screens/onboarding_screen.dart';
+
+// 🔑 Clé globale pour ScaffoldMessenger (SnackBars)
+final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,58 +29,34 @@ class MyAppStarter extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => LocaleProvider(const Locale('en'))),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
       ],
       child: const MyApp(),
     );
   }
 }
-class MyApp extends StatelessWidget {
+
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Consumer2<ThemeProvider, LocaleProvider>(
-      builder: (context, themeProvider, localeProvider, child) {
-        // 🔹 Passe les providers au router
-        final GoRouter router = AppRouter.getRouter(
-          themeProvider: themeProvider,
-          localeProvider: localeProvider,
-        );
-
-        return MaterialApp.router(
-          debugShowCheckedModeBanner: false,
-          routerConfig: router,
-          title: 'Portail PNUD',
-          theme: AppThemes.lightTheme,
-          darkTheme: AppThemes.darkTheme,
-          themeMode: themeProvider.themeMode,
-          locale: localeProvider.locale,
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          themeAnimationDuration: Duration.zero,
-          themeAnimationCurve: Curves.linear,
-          builder: (context, child) {
-            return SplashOrOnboardingWrapper(child: child);
-          },
-        );
-      },
-    );
-  }
+  State<MyApp> createState() => _MyAppState();
 }
 
-// --------------------
-// Widget qui gère l’onboarding
-// --------------------
-class SplashOrOnboardingWrapper extends StatefulWidget {
-  final Widget? child;
-  const SplashOrOnboardingWrapper({this.child, super.key});
+class _MyAppState extends State<MyApp> {
+  late final GoRouter _router;
+  bool _showOnboarding = true; // affiche onboarding au lancement
 
   @override
-  State<SplashOrOnboardingWrapper> createState() => _SplashOrOnboardingWrapperState();
-}
+  void initState() {
+    super.initState();
 
-class _SplashOrOnboardingWrapperState extends State<SplashOrOnboardingWrapper> {
-  bool _showOnboarding = true;
+    // GoRouter configuré normalement, sans navigatorKey
+    _router = AppRouter.getRouter(
+      themeProvider: ThemeProvider(),
+      localeProvider: LocaleProvider(const Locale('en')),
+    );
+  }
 
   void _finishOnboarding() {
     setState(() {
@@ -86,9 +66,40 @@ class _SplashOrOnboardingWrapperState extends State<SplashOrOnboardingWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    if (_showOnboarding) {
-      return AGVMOnboardingScreen(onFinished: _finishOnboarding);
-    }
-    return widget.child!;
+    return Consumer2<ThemeProvider, LocaleProvider>(
+      builder: (context, themeProvider, localeProvider, child) {
+        if (_showOnboarding) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Portail PNUD',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider.themeMode,
+            locale: localeProvider.locale,
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            home: OnboardingPage(
+              onFinished: _finishOnboarding,
+            ),
+          );
+        }
+
+        // Après onboarding, app principale avec GoRouter
+        return MaterialApp.router(
+          debugShowCheckedModeBanner: false,
+          routerConfig: _router,
+          scaffoldMessengerKey: rootScaffoldMessengerKey, // ✅ notifications
+          title: 'Portail PNUD',
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: themeProvider.themeMode,
+          locale: localeProvider.locale,
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          themeAnimationDuration: Duration.zero,
+          themeAnimationCurve: Curves.linear,
+        );
+      },
+    );
   }
 }

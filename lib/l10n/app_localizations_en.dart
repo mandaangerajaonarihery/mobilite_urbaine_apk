@@ -9,7 +9,31 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get startButton => 'Hiditra';
+
+  @override
   String get landingTitle => 'Manavao ny Fitantanana ny Fitaterana an-tanàn-dehibe';
+
+  @override
+  String get login => 'Hiditra';
+
+  @override
+  String get logout => 'Hivoaka';
+
+  @override
+  String get connectedSuccess => 'Niala soa aman-tsara';
+
+  @override
+  String get languageFr => 'Frantsay';
+
+  @override
+  String get languageMg => 'Malagasy';
+
+  @override
+  String get lightMode => 'Mazava';
+
+  @override
+  String get darkMode => 'Maizina';
 
   @override
   String get landingWelcome => 'Vahaolana feno ho an\'ny fiaraha-miasa, tompona fiara ary mpiasam-panjakana ho an\'ny fanaraha-maso mahomby sy mangarahara.';
@@ -69,11 +93,77 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginButton => 'Hiditra';
 
   @override
-  String get loginFailed => 'Tsy nahomby ny fidirana. Hamarino azafady ny mombam-baovao nampidirinao.';
+  String get loginFailed => 'Tsy nahomby ny fidirana. Hamarino azafady ny mailaka na teny miafina nampidirinao.';
 
   @override
   String get error => 'Hadisoana';
 
   @override
   String get demoInfo => 'Fomba fanehoana: afaka mampiasa adiresy mailaka sy tenimiafina rehetra ianao';
+
+  @override
+  String get cooperativeSpace => 'Sehatra ho an\'ny kaoperativa';
+
+  @override
+  String get cooperativeDescription => 'Tantano ny fikambananareo amin’ny fitaterana, araho ny fiara voasoratra anarana ary ampanjary ny asanareo.';
+
+  @override
+  String get cooperativeFeature1 => 'Fitantanana ny fiara voasoratra anarana';
+
+  @override
+  String get cooperativeFeature2 => 'Tabilao famakafakana';
+
+  @override
+  String get cooperativeFeature3 => 'Fanaraha-maso ny vola miditra';
+
+  @override
+  String get cooperativeFeature4 => 'Fitantanana ny mpamily';
+
+  @override
+  String get proprietaireSpace => 'Sehatra ho an\'ny tompony fiara';
+
+  @override
+  String get proprietaireDescription => 'Soraty anarana ny fiaranao, tantano ny fahazoan-dàlana ary araho ny satan’ny fangatahanao.';
+
+  @override
+  String get proprietaireFeature1 => 'Fisoratana anarana fiara';
+
+  @override
+  String get proprietaireFeature2 => 'Fangatahana fahazoan-dàlana';
+
+  @override
+  String get proprietaireFeature3 => 'Fanaraha-maso ny antontan-taratasy';
+
+  @override
+  String get proprietaireFeature4 => 'Tantaran’ny fifanakalozana';
+
+  @override
+  String get chauffeurSpace => 'Sehatra mpamily';
+
+  @override
+  String get chauffeurDescription => 'Midira amin’ny dianao, araho ny vola miditra ary tantano ny fahafahanao miasa.';
+
+  @override
+  String get chauffeurFeature1 => 'Fitantanana ny dia';
+
+  @override
+  String get chauffeurFeature2 => 'Fanaraha-maso ny vola miditra';
+
+  @override
+  String get chauffeurFeature3 => 'Tantaran’ny dia';
+
+  @override
+  String get chauffeurFeature4 => 'Fitantanana ny fahafahana miasa';
+
+  @override
+  String get projectBadge => 'TETIKASA FITATERANA AN-TANÀNA';
+
+  @override
+  String get mobiliteTitle => 'FITATERANA AN-TANÀNA';
+
+  @override
+  String get mobiliteSubtitle => 'Sehatra nomerika ho an’ny fitaterana an-tanàna marani-tsaina';
+
+  @override
+  String get accessButton => 'Hiditra';
 }

@@ -1,7 +1,14 @@
 {
   "@@locale": "en",
+  "startButton": "Hiditra",
   "landingTitle": "Manavao ny Fitantanana ny Fitaterana an-tanàn-dehibe",
-
+ "login": "Hiditra",
+  "logout": "Hivoaka",
+  "connectedSuccess": "Niala soa aman-tsara",
+   "languageFr": "Frantsay",
+  "languageMg": "Malagasy",
+  "lightMode": "Mazava",
+  "darkMode": "Maizina",
 "landingWelcome": "Vahaolana feno ho an'ny fiaraha-miasa, tompona fiara ary mpiasam-panjakana ho an'ny fanaraha-maso mahomby sy mangarahara.",
 
 "landingLogin": "Midira amin'ny sehatra",
@@ -32,8 +39,35 @@
     "passwordLabel": "Teny miafina",
     "passwordValidation": "Ampidiro azafady ny tenimiafinao",
     "loginButton": "Hiditra",
-    "loginFailed": "Tsy nahomby ny fidirana. Hamarino azafady ny mombam-baovao nampidirinao.",
+    "loginFailed": "Tsy nahomby ny fidirana. Hamarino azafady ny mailaka na teny miafina nampidirinao.",
     "error": "Hadisoana",
-    "demoInfo": "Fomba fanehoana: afaka mampiasa adiresy mailaka sy tenimiafina rehetra ianao"
+    "demoInfo": "Fomba fanehoana: afaka mampiasa adiresy mailaka sy tenimiafina rehetra ianao",
+      "cooperativeSpace": "Efitra Fikambanana",
+
+  "cooperativeSpace": "Sehatra ho an'ny kaoperativa",
+  "cooperativeDescription": "Tantano ny fikambananareo amin’ny fitaterana, araho ny fiara voasoratra anarana ary ampanjary ny asanareo.",
+  "cooperativeFeature1": "Fitantanana ny fiara voasoratra anarana",
+  "cooperativeFeature2": "Tabilao famakafakana",
+  "cooperativeFeature3": "Fanaraha-maso ny vola miditra",
+  "cooperativeFeature4": "Fitantanana ny mpamily",
+
+  "proprietaireSpace": "Sehatra ho an'ny tompony fiara",
+  "proprietaireDescription": "Soraty anarana ny fiaranao, tantano ny fahazoan-dàlana ary araho ny satan’ny fangatahanao.",
+  "proprietaireFeature1": "Fisoratana anarana fiara",
+  "proprietaireFeature2": "Fangatahana fahazoan-dàlana",
+  "proprietaireFeature3": "Fanaraha-maso ny antontan-taratasy",
+  "proprietaireFeature4": "Tantaran’ny fifanakalozana",
+
+  "chauffeurSpace": "Sehatra mpamily",
+  "chauffeurDescription": "Midira amin’ny dianao, araho ny vola miditra ary tantano ny fahafahanao miasa.",
+  "chauffeurFeature1": "Fitantanana ny dia",
+  "chauffeurFeature2": "Fanaraha-maso ny vola miditra",
+  "chauffeurFeature3": "Tantaran’ny dia",
+  "chauffeurFeature4": "Fitantanana ny fahafahana miasa",
+
+  "projectBadge": "TETIKASA FITATERANA AN-TANÀNA",
+  "mobiliteTitle": "FITATERANA AN-TANÀNA",
+  "mobiliteSubtitle": "Sehatra nomerika ho an’ny fitaterana an-tanàna marani-tsaina",
+  "accessButton": "Hiditra"
 
 }

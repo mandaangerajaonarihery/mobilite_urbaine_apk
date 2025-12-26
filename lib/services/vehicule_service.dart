@@ -8,10 +8,11 @@ import 'package:all_pnud/models/vehicule.dart';
 import 'package:all_pnud/models/immatriculation_info.dart'; // <-- Importation du modèle
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:all_pnud/constantes/api.dart';
 // import 'package:image_picker/image_picker.dart';
 // import 'package:http/http.dart' as http;
 class VehiculeService {
-  final String baseUrl = "https://gateway.tsirylab.com/serviceflotte";
+  final String baseUrl = Api.baseUrl;
 
   Future<List<Vehicule>> getVehiculesByCitizenId(String? citizenId, String? token) async {
     if (citizenId == null || token == null) {

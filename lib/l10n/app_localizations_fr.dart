@@ -9,7 +9,31 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
+  String get startButton => 'Commencer';
+
+  @override
   String get landingTitle => 'Modernisez la Gestion du Transport Urbain';
+
+  @override
+  String get login => 'Connexion';
+
+  @override
+  String get logout => 'Déconnexion';
+
+  @override
+  String get connectedSuccess => 'Déconnecté avec succès';
+
+  @override
+  String get languageFr => 'Français';
+
+  @override
+  String get languageMg => 'Malagasy';
+
+  @override
+  String get lightMode => 'Mode clair';
+
+  @override
+  String get darkMode => 'Mode sombre';
 
   @override
   String get landingWelcome => 'Une solution complète pour les coopératives, propriétaires et agents municipaux pour une supervision efficace et transparente.';
@@ -76,4 +100,70 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get demoInfo => 'Mode démo : utilisez n\'importe quel email et mot de passe';
+
+  @override
+  String get cooperativeSpace => 'Espace Coopérative';
+
+  @override
+  String get cooperativeDescription => 'Gérez votre coopérative de transport, suivez les véhicules affiliés et optimisez vos opérations.';
+
+  @override
+  String get cooperativeFeature1 => 'Gestion des véhicules affiliés';
+
+  @override
+  String get cooperativeFeature2 => 'Tableau de bord analytique';
+
+  @override
+  String get cooperativeFeature3 => 'Suivi des revenus';
+
+  @override
+  String get cooperativeFeature4 => 'Gestion des chauffeurs';
+
+  @override
+  String get proprietaireSpace => 'Espace Propriétaire';
+
+  @override
+  String get proprietaireDescription => 'Enregistrez vos véhicules, gérez vos licences et suivez le statut de vos demandes.';
+
+  @override
+  String get proprietaireFeature1 => 'Enregistrement de véhicules';
+
+  @override
+  String get proprietaireFeature2 => 'Demandes de licences';
+
+  @override
+  String get proprietaireFeature3 => 'Suivi des documents';
+
+  @override
+  String get proprietaireFeature4 => 'Historique des transactions';
+
+  @override
+  String get chauffeurSpace => 'Espace Chauffeur';
+
+  @override
+  String get chauffeurDescription => 'Accédez à vos courses, suivez vos revenus et gérez vos disponibilités.';
+
+  @override
+  String get chauffeurFeature1 => 'Gestion des courses';
+
+  @override
+  String get chauffeurFeature2 => 'Suivi des revenus';
+
+  @override
+  String get chauffeurFeature3 => 'Historique des trajets';
+
+  @override
+  String get chauffeurFeature4 => 'Gestion des disponibilités';
+
+  @override
+  String get projectBadge => 'PROJET MOBILITÉ URBAINE';
+
+  @override
+  String get mobiliteTitle => 'MOBILITÉ URBAINE';
+
+  @override
+  String get mobiliteSubtitle => 'Plateforme digitale pour une mobilité urbaine intelligente';
+
+  @override
+  String get accessButton => 'Accéder';
 }

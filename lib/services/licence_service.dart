@@ -4,9 +4,9 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:all_pnud/constantes/api.dart';
 class LicenceService {
-  final String baseUrl = "https://gateway.tsirylab.com/serviceflotte";
+  final String baseUrl = Api.baseUrl;
 
   /// Création d'une licence simple (déjà existante)
   Future<bool> createLicenceSimple({

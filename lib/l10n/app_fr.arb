@@ -1,8 +1,17 @@
 {
   "@@locale": "fr",
+  "startButton": "Commencer",
   "landingTitle": "Modernisez la Gestion du Transport Urbain",
 
 "landingWelcome": "Une solution complète pour les coopératives, propriétaires et agents municipaux pour une supervision efficace et transparente.",
+
+  "login": "Connexion",
+  "logout": "Déconnexion",
+  "connectedSuccess": "Déconnecté avec succès",
+    "languageFr": "Français",
+  "languageMg": "Malagasy",
+  "lightMode": "Mode clair",
+  "darkMode": "Mode sombre",
 
 "landingLogin": "Accéder à la plateforme",
 
@@ -34,6 +43,33 @@
     "loginButton": "Se connecter",
     "loginFailed": "Échec de la connexion. Veuillez vérifier vos identifiants.",
     "error": "Erreur",
-    "demoInfo": "Mode démo : utilisez n'importe quel email et mot de passe"
+    "demoInfo": "Mode démo : utilisez n'importe quel email et mot de passe",
+ "cooperativeSpace": "Espace Coopérative",
+  "cooperativeDescription": "Gérez votre coopérative de transport, suivez les véhicules affiliés et optimisez vos opérations.",
+  "cooperativeFeature1": "Gestion des véhicules affiliés",
+  "cooperativeFeature2": "Tableau de bord analytique",
+  "cooperativeFeature3": "Suivi des revenus",
+  "cooperativeFeature4": "Gestion des chauffeurs",
 
+  "proprietaireSpace": "Espace Propriétaire",
+  "proprietaireDescription": "Enregistrez vos véhicules, gérez vos licences et suivez le statut de vos demandes.",
+  "proprietaireFeature1": "Enregistrement de véhicules",
+  "proprietaireFeature2": "Demandes de licences",
+  "proprietaireFeature3": "Suivi des documents",
+  "proprietaireFeature4": "Historique des transactions",
+
+  "chauffeurSpace": "Espace Chauffeur",
+  "chauffeurDescription": "Accédez à vos courses, suivez vos revenus et gérez vos disponibilités.",
+  "chauffeurFeature1": "Gestion des courses",
+  "chauffeurFeature2": "Suivi des revenus",
+  "chauffeurFeature3": "Historique des trajets",
+  "chauffeurFeature4": "Gestion des disponibilités",
+
+  "projectBadge": "PROJET MOBILITÉ URBAINE",
+  "mobiliteTitle": "MOBILITÉ URBAINE",
+  "mobiliteSubtitle": "Plateforme digitale pour une mobilité urbaine intelligente",
+  "accessButton": "Accéder"
 }
+
+
+

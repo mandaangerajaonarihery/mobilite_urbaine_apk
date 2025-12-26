@@ -8,6 +8,8 @@ class Cooperative {
   final String? createdAt;
   final String? updatedAt;
   final String? dateDescente;
+  final String? slogantCooperative;
+
 
   /// Nouveau champ pour paiement
   final int? droitAdhesion;
@@ -23,6 +25,8 @@ class Cooperative {
     this.updatedAt,
     this.dateDescente,
     this.droitAdhesion,
+    this.slogantCooperative,
+
   });
 
   factory Cooperative.fromJson(Map<String, dynamic> json) {
@@ -37,6 +41,8 @@ class Cooperative {
       updatedAt: json['updatedAt'] as String?,
       dateDescente: json['date_descente'] as String?,
       droitAdhesion: json['droit_adhesion'] as int?, // <— mapping
+      slogantCooperative: json['slogant_cooperative'] as String?,
+
     );
   }
 
@@ -52,6 +58,8 @@ class Cooperative {
       'updatedAt': updatedAt,
       'date_descente': dateDescente,
       'droit_adhesion': droitAdhesion,
+      'slogant_cooperative': slogantCooperative,
+
     };
   }
 }

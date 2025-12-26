@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart'; // Import pour debugPrint
-
+import 'package:all_pnud/constantes/api.dart';
 class AuthService {
-  final String baseUrl = "https://gateway.tsirylab.com";
+  final String baseUrl = Api.Urlauth;
 
   Future<String?> login(String email, String password) async {
     final url = Uri.parse("$baseUrl/serviceauth/auth/login");
